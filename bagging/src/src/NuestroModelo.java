@@ -313,4 +313,5 @@ public class NuestroModelo implements Modelo {
 		}
 		this.crearMatrixConfusion(copia, instanciasAEvaluar);
 	}
+
 }	
