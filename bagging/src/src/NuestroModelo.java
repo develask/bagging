@@ -232,6 +232,7 @@ public class NuestroModelo implements Modelo {
 	}
 
 	public double clasificarInstancia(Instance NoClasificada){
+		this.prepararInstancias(NoClasificada);
 		int numerovecinos = this.getKNN();
 		//recorreremos el array hasta el numero de k en instancias
 		double[] mediasPeso = new double[this.instanciasBuenas.numClasses()];
@@ -242,6 +243,7 @@ public class NuestroModelo implements Modelo {
 			}
 		}
 		for(int i=0;i<numerovecinos;i++){
+			System.out.println(i+" | "+(int)lista[i][0]+" | "+this.instanciasBuenas.get((int)lista[i][0]).classValue()+" | "+calcularPeso(lista[i][1]));
 			temp[(int)this.instanciasBuenas.get((int)lista[i][0]).classValue()][0]+=calcularPeso(lista[i][1]);
 			temp[(int)this.instanciasBuenas.get((int)lista[i][0]).classValue()][1]++;
 		}
@@ -252,6 +254,7 @@ public class NuestroModelo implements Modelo {
 				mediasPeso[i]=-1;
 			}
 		}
+		System.out.println(conseguirClase(mediasPeso));
 		return conseguirClase(mediasPeso);
 	}
 
@@ -278,7 +281,6 @@ public class NuestroModelo implements Modelo {
 			break;
 		}
 		return pos;
-		
 	}
 	public void buildClasifier(Instances instancias){
 		this.instanciasBuenas = instancias;
@@ -308,7 +310,6 @@ public class NuestroModelo implements Modelo {
 	public void evaluarModelo(Instances instanciasAEvaluar) {
 		Instances copia = new Instances(instanciasAEvaluar, 0, instanciasAEvaluar.numInstances());
 		for (int i=0;i<copia.numInstances();i++) {
-			this.prepararInstancias(copia.get(i));
 			copia.get(i).setClassValue(this.clasificarInstancia(copia.get(i)));
 		}
 		this.crearMatrixConfusion(copia, instanciasAEvaluar);
