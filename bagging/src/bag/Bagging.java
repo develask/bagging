@@ -1,5 +1,6 @@
 package bag;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -9,6 +10,8 @@ import src.NuestroModelo;
 import src.NuestroModelo.DistanceWight;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.filters.Filter;
+import weka.filters.unsupervised.instance.Randomize;
 
 public class Bagging implements Modelo {
 	
@@ -33,31 +36,37 @@ public class Bagging implements Modelo {
 	}
 	
 	public static void main(String[] args) {
-		Instances ins = Lector.getLector().leerInstancias("./iris.arff");
+		Instances ins1 = Lector.getLector().leerInstancias("./breast-cancer.arff");
+		Instances ins;
+		Randomize ra= new Randomize();
+		try {
+			ra.setInputFormat(ins1);
+			ins=Filter.useFilter(ins1, ra);
+		} catch (Exception e) {
+			ins=ins1;
+			e.printStackTrace();
+		}
 		Instances[][] trozos = new Instances[10][2];
 		int size =  ins.size()/10;
 		double acumacc;
 		double accuracyMax = 0.0;
 		Bagging b;
 		int numeroL = 0;
-		for (int i = 2; i <= 2; i++) {
+		for (int i = 2; i <= 15; i++) {
 			acumacc = 0.0;
 			b = new Bagging(i);
-			//TODO
-			for (int j = 1; j <= 1; j++) {
+			for (int j = 1; j <= 10; j++) {
 				trozos[j-1][0] = new Instances(ins, 0, size*(j-1));
 				trozos[j-1][0].addAll(new Instances(ins, size*j, ins.size()-(size*j)));
 				trozos[j-1][1] = new Instances(ins, size*(j-1), size);
 			}
-			//TODO
-			for (int k = 0; k < 1; k++) {
+			for (int k = 0; k < 10; k++) {
 				b.buildClasifier(trozos[k][0]);
 				b.evaluarModelo(trozos[k][1]);
 				System.out.println(b.calcularMediciones());
 				acumacc+=b.accuracy();
 			}
-			//TODO
-			acumacc=acumacc/1.0;
+			acumacc=acumacc/10.0;
 			System.out.println("L: "+i+" | Accuracy: "+acumacc);
 			if(acumacc > accuracyMax){
 				accuracyMax = acumacc;
@@ -116,7 +125,6 @@ public class Bagging implements Modelo {
 				count+=this.matrizConf[i][j];
 			}
 		}
-		System.out.println(correct + " - " + count + " | " + correct/count);
 		return correct/count;
 	}
 
@@ -127,7 +135,7 @@ public class Bagging implements Modelo {
 		Instances nuevas;
 		for (int i = 0; i < modelos.length; i++) {
 			nuevas = this.crearMuestras();
-			modelos[i] = new NuestroModelo(135, DistanceWight.NoDistance, 1);
+			modelos[i] = new NuestroModelo(2, DistanceWight.NoDistance, 1);
 			modelos[i].buildClasifier(nuevas);
 		}
 	}
@@ -141,8 +149,7 @@ public class Bagging implements Modelo {
 				this.matrizConf[f][i] = 0;
 			}
 		}
-		//TODO
-		for (int i = 0; i < 1 ; i++){// instanciasAEvaluar.size(); i++) {
+		for (int i = 0; i < instanciasAEvaluar.size(); i++) {
 			in = instanciasAEvaluar.get(i);
 			double predClass = this.clasificarInstancia(in);
 			this.matrizConf[(int) predClass][(int)in.classValue()]++;	
@@ -152,11 +159,13 @@ public class Bagging implements Modelo {
 	@Override
 	public double clasificarInstancia(Instance NoClasificada) {
 		double[] clases = new double[this.misinstancias.numClasses()];
-		//TODO
-		for (int j = 0; j < 1; j++){// modelos.length; j++) { 
-			int vari = (int)modelos[j].clasificarInstancia(NoClasificada);
-			System.out.println(vari);
-			clases[vari]++;
+		for (int j = 0; j < modelos.length; j++) { 
+			try{
+				clases[(int)modelos[j].clasificarInstancia(NoClasificada)]++;
+			}catch(ArrayIndexOutOfBoundsException exception){
+				
+			}
+			
 		}
 		double maxpos = 0;
 		double max = 0;

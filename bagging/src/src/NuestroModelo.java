@@ -243,7 +243,6 @@ public class NuestroModelo implements Modelo {
 			}
 		}
 		for(int i=0;i<numerovecinos;i++){
-			System.out.println(i+" | "+(int)lista[i][0]+" | "+this.instanciasBuenas.get((int)lista[i][0]).classValue()+" | "+calcularPeso(lista[i][1]));
 			temp[(int)this.instanciasBuenas.get((int)lista[i][0]).classValue()][0]+=calcularPeso(lista[i][1]);
 			temp[(int)this.instanciasBuenas.get((int)lista[i][0]).classValue()][1]++;
 		}
@@ -254,7 +253,6 @@ public class NuestroModelo implements Modelo {
 				mediasPeso[i]=-1;
 			}
 		}
-		System.out.println(conseguirClase(mediasPeso));
 		return conseguirClase(mediasPeso);
 	}
 
