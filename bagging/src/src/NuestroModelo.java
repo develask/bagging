@@ -243,12 +243,12 @@ public class NuestroModelo implements Modelo {
 			}
 		}
 		for(int i=0;i<numerovecinos;i++){
-			temp[(int)this.instanciasBuenas.get((int)lista[i][0]).classValue()][0]+=calcularPeso(lista[i][1]);
+			temp[(int)this.instanciasBuenas.get((int)lista[i][0]).classValue()][0]++;//+=calcularPeso(lista[i][1]);
 			temp[(int)this.instanciasBuenas.get((int)lista[i][0]).classValue()][1]++;
 		}
 		for(int i=0;i<this.instanciasBuenas.numClasses();i++){
 			if(temp[i][1]>0){
-				mediasPeso[i]=temp[i][0]/temp[i][1];
+				mediasPeso[i]=temp[i][0];// /temp[i][1];
 			}else{
 				mediasPeso[i]=-1;
 			}
@@ -301,7 +301,6 @@ public class NuestroModelo implements Modelo {
 				return Double.compare(o1[1], o2[1]);
 			}
 		});
-		
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package bag;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -36,7 +37,9 @@ public class Bagging implements Modelo {
 	}
 	
 	public static void main(String[] args) {
-		Instances ins1 = Lector.getLector().leerInstancias("./breast-cancer.arff");
+		long TInicio, TFin, tiempo; //Variables para determinar el tiempo de ejecución
+		TInicio = System.currentTimeMillis(); //Tomamos la hora en que inicio el algoritmo y la almacenamos en la variable inicio
+		Instances ins1 = Lector.getLector().leerInstancias("./iris.arff");
 		Instances ins;
 		Randomize ra= new Randomize();
 		try {
@@ -49,10 +52,11 @@ public class Bagging implements Modelo {
 		Instances[][] trozos = new Instances[10][2];
 		int size =  ins.size()/10;
 		double acumacc;
-		double accuracyMax = 0.0;
+		double accuracyMax = 0.00000;
 		Bagging b;
 		int numeroL = 0;
 		for (int i = 2; i <= 15; i++) {
+			long TIniciodentro=System.currentTimeMillis();;
 			acumacc = 0.0;
 			b = new Bagging(i);
 			for (int j = 1; j <= 10; j++) {
@@ -63,20 +67,23 @@ public class Bagging implements Modelo {
 			for (int k = 0; k < 10; k++) {
 				b.buildClasifier(trozos[k][0]);
 				b.evaluarModelo(trozos[k][1]);
-				System.out.println(b.calcularMediciones());
 				acumacc+=b.accuracy();
 			}
-			acumacc=acumacc/10.0;
+			acumacc=(double)acumacc/10.0;
 			System.out.println("L: "+i+" | Accuracy: "+acumacc);
 			if(acumacc > accuracyMax){
 				accuracyMax = acumacc;
 				numeroL=i;
 			}
+			TFin = System.currentTimeMillis(); //Tomamos la hora en que finalizó el algoritmo y la almacenamos en la variable T
+			tiempo = TFin - TIniciodentro; //Calculamos los milisegundos de diferencia
+			System.out.println("Tiempo de ejecución en milisegundos: " + tiempo); //Mostramos en pantalla el tiempo de ejecución en milisegundos
 		}
 		System.out.println("\n\nBest L: "+numeroL+" | Accuracy: "+accuracyMax);
-		
+		TFin = System.currentTimeMillis(); //Tomamos la hora en que finalizó el algoritmo y la almacenamos en la variable T
+		tiempo = TFin - TInicio; //Calculamos los milisegundos de diferencia
+		System.out.println("Tiempo de ejecución en milisegundos: " + tiempo); //Mostramos en pantalla el tiempo de ejecución en milisegundos
 
-		
 	}
 
 	@Override
@@ -125,7 +132,7 @@ public class Bagging implements Modelo {
 				count+=this.matrizConf[i][j];
 			}
 		}
-		return correct/count;
+		return (double)correct/count;
 	}
 
 	@Override
